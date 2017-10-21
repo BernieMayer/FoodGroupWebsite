@@ -133,31 +133,28 @@ function handleSubmit()
 
     const blockSize = 16;  //Since there are 8 ageGroups and 2 genders
     var foodGroupOffset = retriveFoodGroupOffset(foodType)
-    var servingsIndex = foodGroupOffset * blockSize +
+    console.log("foodGroupOffset is " + foodGroupOffset);
+    var servingsIndex = Number(foodGroupOffset) * blockSize +
                         ageRangeIndex * 2  + genderOffset;
 
     const servPerMiyKey = "servings to per to miy"
+
     var numServings = servingsPerDayJSONdata[servPerMiyKey][servingsIndex].servings
     return numServings
 
   }
   function retriveFoodGroupOffset(foodType)
   {
-    if (foodType === "vf")
-    {
-      return 0;
-    } else if (foodType === "gr")
-    {
-      return 1;
-    } else if (foodType === "mi")
-    {
-      return 2;
-    } else if (foodType === "me")
-    {
-      return 3;
-    } else {
-      return -1;
+    var index = 0;
+    for (var i = 0; i < foodGroups.length; i++) {
+      if (foodGroups[i] === foodType)
+      {
+        return index
+      }
+      index++;
     }
+
+    return -1;
   }
 
   function retrieveAgeRangeIndex(ageRange)
