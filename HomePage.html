@@ -23,8 +23,8 @@
 <form id="FoodGroupInfo" >
   <p>Select your gender:</p>
   <select name="genderList" id="genderList">
-    <option value="male">Male</option>
-    <option value="female">Female</option>
+    <option value="Male">Male</option>
+    <option value="Female">Female</option>
   </select>
 
 
@@ -46,14 +46,39 @@
 
 <p id="foodRecomendations"></p>
 
+<p id="testSlot"></p>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
 <script>
 
+
+
+
+
+var fg_directional_JSONdata;
+var foodGroupJSONdata;
+var foodsJSONdata;
+var servingsPerDayJSONdata;
+
+let foodGroups = ["vf", "gr", "mi", "me"]
+
+
+  //load the foodGroup json data
   $.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
-    data.foodgroups.forEach(function(foodtype){
-      console.log(foodtype.fgid)
-    } )
+    foodGroupJSONdata = data;
   })
+
+  //load the foods json data
+  $.getJSON('MyFoodGuideJSON/foods-en.json', function(data) {
+    foodsJSONdata = data;
+  })
+
+  //load the servings json data
+  $.getJSON('MyFoodGuideJSON/servings_per_day-en.json', function(data) {
+    servingsPerDayJSONdata = data;
+  })
+
+
 
 function handleSubmit()
 {
@@ -63,8 +88,107 @@ function handleSubmit()
   text += "ageCatagory: " + ageCatagory.value + "<br>";
   text += "genderList: " + gender.value + "<br>";
 
+  var foodGroupServings = []
+  foodGroups.forEach( function(foodGroup)
+  {
+    foodGroupServings.push(retrieveServings(ageCatagory.value, foodGroup, gender.value));
+  });
+
+  var i = 0;
+
+  foodGroupServings.forEach( function(serving)
+  {
+      text += foodGroups[i] + " : " + serving + "<br>";
+      i++;
+  })
+
+
   document.getElementById("foodRecomendations").innerHTML = text;
+
+
 }
+
+  //This function aims to retrive a random food type
+  function retriveRandomFood(foodType)
+  {
+
+  }
+
+
+
+  //This function will retrieve the Servings of a food type
+  function retrieveServings(ageRange, foodType, gender)
+  {
+    var ageRangeIndex = retrieveAgeRangeIndex(ageRange);
+
+    var genderOffset;
+    if (gender === "Female") {
+      genderOffset = 0;
+    } else {
+      genderOffset = 1;
+    }
+    //Since the data switches between Female then Male
+    //It makes it so that all the Female
+    //Food indices are even and the male are odd
+
+    const blockSize = 16;  //Since there are 8 ageGroups and 2 genders
+    var foodGroupOffset = retriveFoodGroupOffset(foodType)
+    var servingsIndex = foodGroupOffset * blockSize +
+                        ageRangeIndex + genderOffset;
+
+    const servPerMiyKey = "servings to per to miy"
+    var numServings = servingsPerDayJSONdata[servPerMiyKey][servingsIndex].servings
+    console.log("numServings is " + servingsIndex);
+    return numServings
+
+  }
+  function retriveFoodGroupOffset(foodType)
+  {
+    if (foodType === "vf")
+    {
+      return 0;
+    } else if (foodType === "gr")
+    {
+      return 1;
+    } else if (foodType === "mi")
+    {
+      return 2;
+    } else if (foodType === "me")
+    {
+      return 3;
+    } else {
+      return -1;
+    }
+  }
+
+  function retrieveAgeRangeIndex(ageRange)
+  {
+    console.log("The age range is " + ageRange);
+    if (ageRange === '2 to 3')
+    {
+      return 0;
+    } else if (ageRange === "4 to 8")
+    {
+      return 1;
+    } else if (ageRange === "9 to 13") {
+      return 2;
+    } else if (ageRange === "14 to 18") {
+      return 3;
+    } else if (ageRange === "19 to 30") {
+      return 4;
+    } else if (ageRange === "31 to 50") {
+      return 5;
+    } else if (ageRange === "51 to 70") {
+      return 6;
+    } else if (ageRange === "71+") {
+      return 7; //should be 71+
+    } else
+    {
+      return -1;
+    }
+  }
+
+
 
 
 
