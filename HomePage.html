@@ -1,18 +1,35 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+
+</head>
 <body>
+  <!--
+  Food group ids are:
+
+  vf
+  gr
+  mi
+  me
+  -->
+
+
 
 <p><big>Welcome to the Food Group Recommendation Website</big></p>
 
-<p>Select your gender:</p>
-<select>
-  <option value="male">Male</option>
-  <option value="female">Female</option>
-</select>
 
 
-<p>Select your age catagory:</p>
-<select>
+<form id="FoodGroupInfo" >
+  <p>Select your gender:</p>
+  <select name="genderList" id="genderList">
+    <option value="male">Male</option>
+    <option value="female">Female</option>
+  </select>
+
+
+  <p>Select your age catagory:</p>
+  <select name="ageCatagoryList" id="ageCatagoryList">
     <option value="2 to 3">2 to 3</option>
     <option value="4 to 8">4 to 8</option>
     <option value="9 to 13">9 to 13</option>
@@ -23,7 +40,43 @@
     <option value="71+">71+</option>
   </select>
   <p> </p>
-  <button type="button">Submit</button>
+</form>
+
+<button onclick="handleSubmit()">Submit</button>
+
+<p id="foodRecomendations"></p>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
+<script>
+
+  $.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
+    data.foodgroups.forEach(function(foodtype){
+      console.log(foodtype.fgid)
+    } )
+  })
+
+function handleSubmit()
+{
+  var text = ""
+  var gender = document.getElementById("genderList");
+  var ageCatagory = document.getElementById("ageCatagoryList");
+  text += "ageCatagory: " + ageCatagory.value + "<br>";
+  text += "genderList: " + gender.value + "<br>";
+
+  document.getElementById("foodRecomendations").innerHTML = text;
+}
+
+
+
+</script>
+
+
+
+
+
+
+
+
 
 </body>
 </html>
