@@ -134,11 +134,10 @@ function handleSubmit()
     const blockSize = 16;  //Since there are 8 ageGroups and 2 genders
     var foodGroupOffset = retriveFoodGroupOffset(foodType)
     var servingsIndex = foodGroupOffset * blockSize +
-                        ageRangeIndex + genderOffset;
+                        ageRangeIndex * 2  + genderOffset;
 
     const servPerMiyKey = "servings to per to miy"
     var numServings = servingsPerDayJSONdata[servPerMiyKey][servingsIndex].servings
-    console.log("numServings is " + servingsIndex);
     return numServings
 
   }
