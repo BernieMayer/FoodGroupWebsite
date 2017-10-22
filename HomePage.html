@@ -2,63 +2,42 @@
 <html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+<!---
+Might need to be removed in the final product
 
+--->
 
-
-table {
-    border-collapse: collapse;
-    width: 100%;
+table, td {
+    border: 1px solid black;
 }
-
-th, td {
-    padding: 8px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-tr:hover{background-color:#f5f5f5}
-p {
-  padding: 5px
-}
-
-
-select{
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin-left: 10px;
-}
-
-button {
-  margin-left: 10px;
-}
-
 </style>
-</style>
+
+
+
 
 <head>
 
 </head>
-<body >
-<p><big>Canadian Food Group Recommendation </big></p>
+<body>
+<p><big>Welcome to the Food Group Recommendation Website</big></p>
 
-<p>Fill out the form below to get reccomendations based on your age and gender </p>
+
 
 <form id="FoodGroupInfo" >
-
   <p>Select your gender:</p>
-  <select name="genderList" id="genderList" padding="10">
+  <select name="genderList" id="genderList">
     <option value="Male">Male</option>
     <option value="Female">Female</option>
   </select>
 
 
   <p>Select your age catagory:</p>
-  <select name="ageCatagoryList" id="ageCatagoryList" padding= "10">
+  <select name="ageCatagoryList" id="ageCatagoryList">
     <option value="2 to 3">2 to 3</option>
     <option value="4 to 8">4 to 8</option>
     <option value="9 to 13">9 to 13</option>
@@ -71,11 +50,11 @@ button {
   <p> </p>
 </form>
 
-<button onclick="handleSubmit()" id="btnSubmit">Submit</button>
+<button onclick="handleSubmit()">Submit</button>
 
 <p id="foodRecomendations"></p>
 
-<table id="foodRecomendationsTable"   style="visibility:hidden" >
+<table id="foodRecomendationsTable">
   <tr>
   <td>    </td>
   <td>Food Name</td>
@@ -83,10 +62,6 @@ button {
   <td>Serving Size</td>
 </tr>
 </table>
-
-<p> </p>
-<button onclick="randomizeFoodOptions()" id="btnRequestAlternatives" style="visibility:hidden">
-  Show me an alternative diet plan</button>
 
 <p id="testSlot"></p>
 
@@ -131,78 +106,55 @@ const meFoodsFinishIndex = 153;
     servingsPerDayJSONdata = data;
   })
 
-function retrieveFoodGroupServings(ageCatagory, gender)
-{
-  var foodGroupServings = []
-  foodGroups.forEach( function(foodGroup)
-  {
-    foodGroupServings.push(retrieveServings(ageCatagory, foodGroup, gender));
-  });
-  return foodGroupServings;
-}
 
 
 function handleSubmit()
 {
-  document.getElementById('btnSubmit').style.visibility = 'hidden';
-  document.getElementById('btnRequestAlternatives').style.visibility = 'visible';
-  var gender = document.getElementById("genderList").value;
-  var ageCatagory = document.getElementById("ageCatagoryList").value;
+  var text = ""
+  var gender = document.getElementById("genderList");
+  var ageCatagory = document.getElementById("ageCatagoryList");
+  text += "ageCatagory: " + ageCatagory.value + "<br>";
+  text += "genderList: " + gender.value + "<br>";
 
+  var foodGroupServings = []
+  foodGroups.forEach( function(foodGroup)
+  {
+    foodGroupServings.push(retrieveServings(ageCatagory.value, foodGroup, gender.value));
+  });
 
-  var foodGroupServings = retrieveFoodGroupServings(ageCatagory, gender);
-  var table = document.getElementById("foodRecomendationsTable");
-  //make the table visible
-  table.style.visibility = 'visible';
-
-  generateFoodGroupRowsForTable(table, foodGroupServings);
-
-  }
-
-
-
-
-
-
-
-function generateFoodGroupRowsForTable(table, foodGroupServings)
-{
   var i = 0;
+
+  foodGroupServings.forEach( function(serving)
+  {
+      text += foodGroups[i] + " : " + serving + "<br>";
+      i++;
+  })
+
+  i = 0;
   foodGroups.forEach( function(foodGroup)
   {
     var foodJSON = retriveRandomFood(foodGroup);
     var foodGroupFullName = foodGroupsFullNames[i];
 
-
+    var table = document.getElementById("foodRecomendationsTable");
 
     var foodInformationRow = table.insertRow(table.rows.length)
+
     var foodGroupFullNameCell = createTableTextNode(foodGroupFullName, foodInformationRow);
     var foodNameCell = createTableTextNode(foodJSON.food, foodInformationRow);
     var foodServingsCell = createTableTextNode(foodGroupServings[i], foodInformationRow);
     var foodGroupServingsSizeCell = createTableTextNode(foodJSON.srvg_sz, foodInformationRow);
 
+
+
+
+    //text += foodGroupFullName + " : " + foodJSON.food + " with " +
+    //foodGroupServings[i] + " servings" + "<br>";
     i++;
   })
-}
-
-function randomizeFoodOptions()
-{
-  //make the table be one row.
-  var table = document.getElementById("foodRecomendationsTable");
-  while (table.rows.length > 1) {
-    table.deleteRow(table.rows.length - 1);
-  }
-
-  var gender = document.getElementById("genderList").value;
-  var ageCatagory = document.getElementById("ageCatagoryList").value;
 
 
-  var foodGroupServings = retrieveFoodGroupServings(ageCatagory, gender);
-  var table = document.getElementById("foodRecomendationsTable");
-
-
-  generateFoodGroupRowsForTable(table, foodGroupServings);
-
+  document.getElementById("foodRecomendations").innerHTML = text;
 
 
 }
