@@ -25,6 +25,14 @@ p {
   padding: 5px
 }
 
+#FoodFormDiv
+{
+  border-top:4px solid #ddd;
+  border-bottom: 4px solid #ddd;
+}
+
+
+
 
 select{
     -webkit-appearance: none;
@@ -46,8 +54,9 @@ button {
 <body >
 <p><big>Canadian Food Group Recommendation </big></p>
 
-<p>Fill out the form below to get reccomendations based on your age and gender </p>
+<p>Fill out the form below to get diet reccomendations based on your age and gender </p>
 
+<div id="FoodFormDiv">
 <form id="FoodGroupInfo" >
 
   <p>Select your gender:</p>
@@ -72,8 +81,10 @@ button {
 </form>
 
 <button onclick="handleSubmit()" id="btnSubmit">Submit</button>
+</div>
 
-<p id="foodRecomendations"></p>
+<p id="tableDescription"></p>
+
 
 <table id="foodRecomendationsTable"   style="visibility:hidden" >
   <tr>
@@ -105,6 +116,9 @@ var servingsPerDayJSONdata;
 let foodGroups = ["vf", "gr", "mi", "me"]
 let foodGroupsFullNames = ["Vegetables and Fruit", "Grains",
                       "Milk and Alternatives", "Meat and Alternatives"]
+
+//These values indicate where in the JSOn document
+//The catagories of food start and end
 
 const vfFoodsStartIndex = 0;
 const vfFoodsFinishIndex = 74;
@@ -152,10 +166,15 @@ function handleSubmit()
 
   var foodGroupServings = retrieveFoodGroupServings(ageCatagory, gender);
   var table = document.getElementById("foodRecomendationsTable");
+
   //make the table visible
   table.style.visibility = 'visible';
 
   generateFoodGroupRowsForTable(table, foodGroupServings);
+
+  var tableDescription =
+  "The table below shows what the Canadian goverment recommends as a balanced diet for you:"
+  document.getElementById("tableDescription").innerHTML = tableDescription;
 
   }
 
@@ -179,11 +198,35 @@ function generateFoodGroupRowsForTable(table, foodGroupServings)
     var foodGroupFullNameCell = createTableTextNode(foodGroupFullName, foodInformationRow);
     var foodNameCell = createTableTextNode(foodJSON.food, foodInformationRow);
     var foodServingsCell = createTableTextNode(foodGroupServings[i], foodInformationRow);
-    var foodGroupServingsSizeCell = createTableTextNode(foodJSON.srvg_sz, foodInformationRow);
+
+    //the servings size needs some parsing before being put into the row
+    var foodGroupServingsSizeCell = createTableTextNode(parseForFraction(foodJSON.srvg_sz),
+                                                        foodInformationRow);
 
     i++;
   })
 }
+
+function parseForFraction(text)
+{
+
+  if (text.includes('&frac12;'))
+  {
+    text = text.replaceAll('&frac12;', ' 1/2');
+  }
+  if (text.includes('&frac34;')) {
+    text = text.replaceAll('&frac34;', ' 3/4');
+  }
+  if (text.includes('&frac14;')) {
+    text = text.replaceAll('&frac14;', '1/4');
+  }
+  return text
+}
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
 
 function randomizeFoodOptions()
 {
