@@ -62,6 +62,15 @@ var servingsPerDayJSONdata;
 
 let foodGroups = ["vf", "gr", "mi", "me"]
 
+const vfFoodsStartIndex = 0;
+const vfFoodsFinishIndex = 74;
+const grFoodsStartIndex = 75;
+const grFoodsFinishIndex = 113;
+const miFoodsStartIndex = 114;
+const miFoodsFinishIndex = 128;
+const meFoodsStartIndex = 129;
+const meFoodsFinishIndex = 153;
+
 
   //load the foodGroup json data
   $.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
@@ -102,6 +111,13 @@ function handleSubmit()
       i++;
   })
 
+  foodGroups.forEach( function(foodGroup)
+  {
+    var foodJSON = retriveRandomFood(foodGroup);
+
+    text += foodGroup + " : " + foodJSON.food + "<br>";
+  })
+
 
   document.getElementById("foodRecomendations").innerHTML = text;
 
@@ -109,9 +125,28 @@ function handleSubmit()
 }
 
   //This function aims to retrive a random food type
+  //It will a return a json food object
   function retriveRandomFood(foodType)
   {
+      var randomIndex = 0;
+      if (foodType === "vf")
+      {
+        randomIndex = (vfFoodsFinishIndex - vfFoodsStartIndex) * Math.random() + vfFoodsStartIndex;
 
+      } else if (foodType === "gr")
+      {
+        randomIndex = (grFoodsFinishIndex - grFoodsStartIndex) * Math.random() + grFoodsStartIndex;
+      } else if (foodType === "mi")
+      {
+        randomIndex = (miFoodsFinishIndex - miFoodsStartIndex) * Math.random() + miFoodsStartIndex;
+      } else if (foodType === "me")
+      {
+        randomIndex = (meFoodsFinishIndex - meFoodsStartIndex) * Math.random() + meFoodsStartIndex;
+      } else {
+        randomIndex = 0;
+      }
+
+      return foodsJSONdata.foods[Math.floor(randomIndex)];
   }
 
 
@@ -133,7 +168,6 @@ function handleSubmit()
 
     const blockSize = 16;  //Since there are 8 ageGroups and 2 genders
     var foodGroupOffset = retriveFoodGroupOffset(foodType)
-    console.log("foodGroupOffset is " + foodGroupOffset);
     var servingsIndex = Number(foodGroupOffset) * blockSize +
                         ageRangeIndex * 2  + genderOffset;
 
@@ -159,7 +193,6 @@ function handleSubmit()
 
   function retrieveAgeRangeIndex(ageRange)
   {
-    console.log("The age range is " + ageRange);
     if (ageRange === '2 to 3')
     {
       return 0;
