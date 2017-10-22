@@ -61,6 +61,8 @@ var foodsJSONdata;
 var servingsPerDayJSONdata;
 
 let foodGroups = ["vf", "gr", "mi", "me"]
+let foodGroupsFullNames = ["Vegetables and Fruit", "Grains",
+                      "Milk and Alternatives", "Meat and Alternatives"]
 
 const vfFoodsStartIndex = 0;
 const vfFoodsFinishIndex = 74;
@@ -111,11 +113,14 @@ function handleSubmit()
       i++;
   })
 
+  i = 0;
   foodGroups.forEach( function(foodGroup)
   {
     var foodJSON = retriveRandomFood(foodGroup);
-
-    text += foodGroup + " : " + foodJSON.food + "<br>";
+    var foodGroupFullName = foodGroupsFullNames[i];
+    text += foodGroupFullName + " : " + foodJSON.food + " with " +
+    foodGroupServings[i] + " servings" + "<br>";
+    i++;
   })
 
 
