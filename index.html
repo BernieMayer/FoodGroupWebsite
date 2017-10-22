@@ -28,7 +28,10 @@ p {
 #FoodFormDiv
 {
   border-top:4px solid #ddd;
+  border-left:4px solid #ddd;
+  border-right:4px solid #ddd;
   border-bottom: 4px solid #ddd;
+  background-color: WhiteSmoke
 }
 
 
@@ -44,6 +47,8 @@ select{
 button {
   margin-left: 10px;
 }
+
+
 
 </style>
 </style>
@@ -100,13 +105,14 @@ button {
   Show me an alternative diet plan</button>
 
 <p id="testSlot"></p>
+<!---
+
+
+This website uses JQuery to retrieve the JSON data
+-->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
 <script>
-
-
-
-
 
 var fg_directional_JSONdata;
 var foodGroupJSONdata;
@@ -130,24 +136,29 @@ const meFoodsStartIndex = 129;
 const meFoodsFinishIndex = 153;
 
 
-  //load the foodGroup json data
-  $.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
-    foodGroupJSONdata = data;
-  })
+//load the foodGroup json data
+$.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
+  foodGroupJSONdata = data;
+})
 
-  //load the foods json data
-  $.getJSON('MyFoodGuideJSON/foods-en.json', function(data) {
-    foodsJSONdata = data;
-  })
+//load the foods json data
+$.getJSON('MyFoodGuideJSON/foods-en.json', function(data) {
+  foodsJSONdata = data;
+})
 
-  //load the servings json data
-  $.getJSON('MyFoodGuideJSON/servings_per_day-en.json', function(data) {
-    servingsPerDayJSONdata = data;
-  })
+//load the servings json data
+$.getJSON('MyFoodGuideJSON/servings_per_day-en.json', function(data) {
+  servingsPerDayJSONdata = data;
+})
 
+//Retrieves the reccomended servings of each foodGroup
+//This array is in the same order
+//as the foodGroups array
 function retrieveFoodGroupServings(ageCatagory, gender)
 {
   var foodGroupServings = []
+  //Iterate through each foodGroup to add in the
+  //reccomended servings
   foodGroups.forEach( function(foodGroup)
   {
     foodGroupServings.push(retrieveServings(ageCatagory, foodGroup, gender));
@@ -156,10 +167,17 @@ function retrieveFoodGroupServings(ageCatagory, gender)
 }
 
 
+
+//This function is called after the user
+//presses the submit button to submit their
+//age range and gender
 function handleSubmit()
 {
+  //make the submit button not visible
+  //and make the request alternive reccomendedations visible
   document.getElementById('btnSubmit').style.visibility = 'hidden';
   document.getElementById('btnRequestAlternatives').style.visibility = 'visible';
+
   var gender = document.getElementById("genderList").value;
   var ageCatagory = document.getElementById("ageCatagoryList").value;
 
@@ -167,26 +185,26 @@ function handleSubmit()
   var foodGroupServings = retrieveFoodGroupServings(ageCatagory, gender);
   var table = document.getElementById("foodRecomendationsTable");
 
-  //make the table visible
+  //make the food recommendations table visible
   table.style.visibility = 'visible';
 
   generateFoodGroupRowsForTable(table, foodGroupServings);
 
   var tableDescription =
-  "The table below shows what the Canadian goverment recommends as a balanced diet for you:"
+  "The table below is a balanced diet for a day based on the Canadian food guide and based on the age/gender provided:"
   document.getElementById("tableDescription").innerHTML = tableDescription;
-
   }
 
 
 
-
-
-
-
+//This function will add in the foodGroups rows to the table
+//These rows will always be appended to the bottem of the
+//table
+//This method can also be used to randomize the
+//options displayed on the table
 function generateFoodGroupRowsForTable(table, foodGroupServings)
 {
-  var i = 0;
+  var i = 0; //used to keep track of iteration and access into foodGroupServings
   foodGroups.forEach( function(foodGroup)
   {
     var foodJSON = retriveRandomFood(foodGroup);
@@ -194,7 +212,9 @@ function generateFoodGroupRowsForTable(table, foodGroupServings)
 
 
 
+    //Create the row for the table
     var foodInformationRow = table.insertRow(table.rows.length)
+
     var foodGroupFullNameCell = createTableTextNode(foodGroupFullName, foodInformationRow);
     var foodNameCell = createTableTextNode(foodJSON.food, foodInformationRow);
     var foodServingsCell = createTableTextNode(foodGroupServings[i], foodInformationRow);
@@ -207,6 +227,10 @@ function generateFoodGroupRowsForTable(table, foodGroupServings)
   })
 }
 
+
+//Works for the purposes of this site
+//However does not work for all purposes
+//and would need to be updated
 function parseForFraction(text)
 {
 
@@ -223,6 +247,7 @@ function parseForFraction(text)
   return text
 }
 
+//Needed for the parseForFraction method
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
@@ -246,10 +271,10 @@ function randomizeFoodOptions()
 
   generateFoodGroupRowsForTable(table, foodGroupServings);
 
-
-
 }
 
+//This is a helper function used to create
+//text cells onto the row passed into this function
 function createTableTextNode(text, row)
 {
   var tableCell = row.insertCell(row.length);
@@ -258,34 +283,35 @@ function createTableTextNode(text, row)
   return tableCell;
 }
 
-  //This function aims to retrive a random food type
-  //It will a return a json food object
-  function retriveRandomFood(foodType)
-  {
-      var randomIndex = 0;
-      if (foodType === "vf")
-      {
-        randomIndex = (vfFoodsFinishIndex - vfFoodsStartIndex) * Math.random() + vfFoodsStartIndex;
+//This function aims to retrive a random food type
+//It will a return a json food object
+function retriveRandomFood(foodType)
+{
+    var randomIndex = 0;
+    if (foodType === "vf")
+    {
+      randomIndex = (vfFoodsFinishIndex - vfFoodsStartIndex) * Math.random() + vfFoodsStartIndex;
+    } else if (foodType === "gr")
+    {
+      randomIndex = (grFoodsFinishIndex - grFoodsStartIndex) * Math.random() + grFoodsStartIndex;
+    } else if (foodType === "mi")
+    {
+      randomIndex = (miFoodsFinishIndex - miFoodsStartIndex) * Math.random() + miFoodsStartIndex;
+    } else if (foodType === "me")
+    {
+      randomIndex = (meFoodsFinishIndex - meFoodsStartIndex) * Math.random() + meFoodsStartIndex;
+    } else {
+      randomIndex = 0;
+    }
 
-      } else if (foodType === "gr")
-      {
-        randomIndex = (grFoodsFinishIndex - grFoodsStartIndex) * Math.random() + grFoodsStartIndex;
-      } else if (foodType === "mi")
-      {
-        randomIndex = (miFoodsFinishIndex - miFoodsStartIndex) * Math.random() + miFoodsStartIndex;
-      } else if (foodType === "me")
-      {
-        randomIndex = (meFoodsFinishIndex - meFoodsStartIndex) * Math.random() + meFoodsStartIndex;
-      } else {
-        randomIndex = 0;
-      }
-
-      return foodsJSONdata.foods[Math.floor(randomIndex)];
-  }
+    //Since randomIndex is a float taking the floor is needed
+    return foodsJSONdata.foods[Math.floor(randomIndex)];
+}
 
 
 
   //This function will retrieve the Servings of a food type
+  //based on the ageRange, foodType and gender given to the function
   function retrieveServings(ageRange, foodType, gender)
   {
     var ageRangeIndex = retrieveAgeRangeIndex(ageRange);
@@ -307,6 +333,7 @@ function createTableTextNode(text, row)
 
     const servPerMiyKey = "servings to per to miy"
 
+    //This will get the number of servings
     var numServings = servingsPerDayJSONdata[servPerMiyKey][servingsIndex].servings
     return numServings
 
@@ -325,6 +352,9 @@ function createTableTextNode(text, row)
     return -1;
   }
 
+
+  //Figures out the ageRange index
+  //by seeing if it matches a catagory
   function retrieveAgeRangeIndex(ageRange)
   {
     if (ageRange === '2 to 3')
@@ -351,19 +381,6 @@ function createTableTextNode(text, row)
     }
   }
 
-
-
-
-
 </script>
-
-
-
-
-
-
-
-
-
 </body>
 </html>
