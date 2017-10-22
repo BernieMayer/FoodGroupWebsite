@@ -108,7 +108,7 @@ button {
 <!---
 
 
-This website uses JQuery to retrieve the JSON data
+This website uses jQuery to retrieve the JSON data
 -->
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js" ></script>
@@ -135,6 +135,12 @@ const miFoodsFinishIndex = 128;
 const meFoodsStartIndex = 129;
 const meFoodsFinishIndex = 153;
 
+//load the fg_directional json data
+
+$.getJSON('MyFoodGuideJSON/fg_directional_satements-en.json', function(data)
+{
+  fg_directional_JSONdata = data;
+}
 
 //load the foodGroup json data
 $.getJSON('MyFoodGuideJSON/foodgroups-en.json', function(data) {
@@ -255,7 +261,7 @@ String.prototype.replaceAll = function(search, replacement) {
 
 function randomizeFoodOptions()
 {
-  //make the table be one row.
+  //make the table be one row, which will be the title row
   var table = document.getElementById("foodRecomendationsTable");
   while (table.rows.length > 1) {
     table.deleteRow(table.rows.length - 1);
@@ -288,6 +294,7 @@ function createTableTextNode(text, row)
 function retriveRandomFood(foodType)
 {
     var randomIndex = 0;
+
     if (foodType === "vf")
     {
       randomIndex = (vfFoodsFinishIndex - vfFoodsStartIndex) * Math.random() + vfFoodsStartIndex;
