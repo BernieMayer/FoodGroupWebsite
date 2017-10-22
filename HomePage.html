@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html>
 
+<!---
+Might need to be removed in the final product
+
+--->
+<style>
+table, td {
+    border: 1px solid black;
+}
+</style>
+
 <head>
 
 </head>
 <body>
-  <!--
-  Food group ids are:
-
-  vf
-  gr
-  mi
-  me
-  -->
-
-
-
 <p><big>Welcome to the Food Group Recommendation Website</big></p>
 
 
@@ -45,6 +44,15 @@
 <button onclick="handleSubmit()">Submit</button>
 
 <p id="foodRecomendations"></p>
+
+<table id="foodRecomendationsTable">
+  <tr>
+  <td>    </td>
+  <td>Food Name</td>
+  <td>Number of Servings</td>
+  <td>Serving Size</td>
+</tr>
+</table>
 
 <p id="testSlot"></p>
 
@@ -118,8 +126,21 @@ function handleSubmit()
   {
     var foodJSON = retriveRandomFood(foodGroup);
     var foodGroupFullName = foodGroupsFullNames[i];
-    text += foodGroupFullName + " : " + foodJSON.food + " with " +
-    foodGroupServings[i] + " servings" + "<br>";
+
+    var table = document.getElementById("foodRecomendationsTable");
+
+    var foodInformationRow = table.insertRow(table.rows.length)
+
+    var foodGroupFullNameCell = createTableTextNode(foodGroupFullName, foodInformationRow);
+    var foodNameCell = createTableTextNode(foodJSON.food, foodInformationRow);
+    var foodServingsCell = createTableTextNode(foodGroupServings[i], foodInformationRow);
+    var foodGroupServingsSizeCell = createTableTextNode(foodJSON.srvg_sz, foodInformationRow);
+
+
+
+
+    //text += foodGroupFullName + " : " + foodJSON.food + " with " +
+    //foodGroupServings[i] + " servings" + "<br>";
     i++;
   })
 
@@ -127,6 +148,14 @@ function handleSubmit()
   document.getElementById("foodRecomendations").innerHTML = text;
 
 
+}
+
+function createTableTextNode(text, row)
+{
+  var tableCell = row.insertCell(row.length);
+  var textNode = document.createTextNode(text);
+  tableCell.appendChild(textNode);
+  return tableCell;
 }
 
   //This function aims to retrive a random food type
